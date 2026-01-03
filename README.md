@@ -13,6 +13,7 @@
 <p align="center">
   告别手动编辑 JSON 配置文件的繁琐，通过直观的图形界面轻松管理你的 MCP 服务器
 </p>
+<img width="1368" height="679" alt="image" src="https://github.com/user-attachments/assets/90ed7468-22d1-4cc9-8f85-1990f8332d15" />
 
 ---
 
