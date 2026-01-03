@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP 配置工具</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #12171e;
+            --bg-tertiary: #1a2028;
+            --border-color: #2a3441;
+            --text-primary: #e8eef5;
+            --text-secondary: #7a8899;
+            --accent: #00d4aa;
+            --accent-hover: #00f5c4;
+            --accent-glow: rgba(0, 212, 170, 0.15);
+            --success: #00d4aa;
+            --warning: #f0b429;
+            --danger: #ff6b6b;
+            --amber: #f0b429;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo-icon {
+            width: 52px;
+            height: 52px;
+            position: relative;
+        }
+        
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .logo svg {
+            width: 52px;
+            height: 52px;
+        }
+        
+        .logo h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+        
+        .logo h1 span {
+            color: var(--accent);
+        }
+        
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 400;
+            margin-top: 2px;
+            letter-spacing: 0.2px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border: none;
+            border-radius: 35px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+        
+        .btn svg {
+            flex-shrink: 0;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: #0a0e14;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 212, 170, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--text-secondary);
+        }
+        
+        .btn-success {
+            background: transparent;
+            color: var(--success);
+            border: 1px solid var(--success);
+            font-weight: 500;
+        }
+        
+        .btn-success:hover {
+            background: rgba(0, 212, 170, 0.1);
+        }
+        
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 12px;
+            border-radius: 26px;
+        }
+        
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Panel */
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(26, 32, 40, 0.8) 100%);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+            letter-spacing: 0.3px;
+        }
+        
+        .panel-title svg {
+            color: var(--accent);
+        }
+        
+        .panel-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        /* Server Cards */
+        .server-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .server-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .server-card:hover {
+            border-color: var(--accent);
+        }
+        
+        .server-card.disabled {
+            opacity: 0.5;
+        }
+        
+        .server-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .server-name {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .server-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-enabled {
+            background: rgba(0, 212, 170, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(0, 212, 170, 0.25);
+        }
+        
+        .status-disabled {
+            background: rgba(255, 107, 107, 0.12);
+            color: var(--danger);
+            border: 1px solid rgba(255, 107, 107, 0.25);
+        }
+        
+        .server-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .server-info code {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .server-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+</style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 外圈 -->
+                        <circle cx="26" cy="26" r="24" stroke="#2a3441" stroke-width="1.5" fill="none"/>
+                        <!-- 中心六边形 -->
+                        <path d="M26 14L35.5 19.5V30.5L26 36L16.5 30.5V19.5L26 14Z" fill="#12171e" stroke="#00d4aa" stroke-width="1.5"/>
+                        <!-- 连接线 -->
+                        <line x1="26" y1="14" x2="26" y2="6" stroke="#00d4aa" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="35.5" y1="30.5" x2="42" y2="38" stroke="#00d4aa" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="16.5" y1="30.5" x2="10" y2="38" stroke="#00d4aa" stroke-width="1.5" stroke-linecap="round"/>
+                        <!-- 外围节点 -->
+                        <circle cx="26" cy="5" r="3" fill="#00d4aa"/>
+                        <circle cx="43" cy="39" r="3" fill="#f0b429"/>
+                        <circle cx="9" cy="39" r="3" fill="#f0b429"/>
+                        <!-- 中心点 -->
+                        <circle cx="26" cy="25" r="3" fill="#00d4aa"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1><span>MCP</span> 配置工具</h1>
+                    <p>可视化管理你的 Model Context Protocol 服务器</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="importConfig()">
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                        <path d="M7.5 1.5v7M4.5 5.5l3-3 3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M1.5 9.5v3a1 1 0 001 1h10a1 1 0 001-1v-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    导入
+                </button>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                        <path d="M7 0a7 7 0 110 14A7 7 0 017 0zm.75 3.5a.75.75 0 00-1.5 0v2.75H3.5a.75.75 0 000 1.5h2.75v2.75a.75.75 0 001.5 0V7.75h2.75a.75.75 0 000-1.5H7.75V3.5z"/>
+                    </svg>
+                    添加服务器
+                </button>
+            </div>
+        </header>
+
+        <main class="main-layout">
+            <!-- Server List Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="14" height="4" rx="1"/>
+                            <rect x="2" y="7" width="14" height="4" rx="1"/>
+                            <rect x="2" y="12" width="14" height="4" rx="1"/>
+                            <circle cx="5" cy="4" r="1" fill="#00d4aa" stroke="none"/>
+                            <circle cx="5" cy="9" r="1" fill="#00d4aa" stroke="none"/>
+                            <circle cx="5" cy="14" r="1" fill="#f0b429" stroke="none"/>
+                        </svg>
+                        服务器列表
+                    </span>
+                    <span id="serverCount" class="status-badge status-enabled">0 个服务器</span>
+                </div>
+                <div class="panel-body">
+                    <div id="serverList" class="server-list">
+                        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="opacity: 0.4; margin-bottom: 16px;">
+                                <rect x="6" y="8" width="36" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                                <rect x="6" y="20" width="36" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                                <rect x="6" y="32" width="36" height="10" rx="2" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                <circle cx="12" cy="13" r="2" fill="currentColor" opacity="0.5"/>
+                                <circle cx="12" cy="25" r="2" fill="currentColor" opacity="0.5"/>
+                            </svg>
+                            <p>暂无服务器配置</p>
+                            <p style="font-size: 13px; margin-top: 8px;">点击"导入配置"或"添加服务器"开始</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- JSON Preview Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 3C3.5 3 3 4 3 5v2c0 1-1 2-2 2 1 0 2 1 2 2v2c0 1 .5 2 2 2"/>
+                            <path d="M13 3c1.5 0 2 1 2 2v2c0 1 1 2 2 2-1 0-2 1-2 2v2c0 1-.5 2-2 2"/>
+                            <circle cx="7" cy="9" r="0.8" fill="currentColor" stroke="none"/>
+                            <circle cx="9" cy="9" r="0.8" fill="currentColor" stroke="none"/>
+                            <circle cx="11" cy="9" r="0.8" fill="currentColor" stroke="none"/>
+                        </svg>
+                        JSON 预览
+                    </span>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-secondary" onclick="formatJson()">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 3h10M1 6h6M1 9h8"/>
+                            </svg>
+                            格式化
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="copyJson()">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="7" height="7" rx="1"/>
+                                <path d="M8 4V2a1 1 0 00-1-1H2a1 1 0 00-1 1v5a1 1 0 001 1h2"/>
+                            </svg>
+                            复制
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-body" style="padding: 0;">
+                    <textarea id="jsonPreview" style="
+                        width: 100%;
+                        height: 65vh;
+                        background: var(--bg-primary);
+                        color: var(--text-primary);
+                        border: none;
+                        padding: 20px;
+                        font-family: 'IBM Plex Mono', monospace;
+                        font-size: 13px;
+                        line-height: 1.6;
+                        resize: none;
+                        outline: none;
+                    " placeholder='{"mcpServers": {}}'></textarea>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">添加服务器</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="serverForm">
+                    <input type="hidden" id="editingServer" value="">
+                    
+                    <div class="form-group">
+                        <label>服务器名称 *</label>
+                        <input type="text" id="serverName" placeholder="例如: my-mcp-server" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>传输类型</label>
+                            <select id="transportType" onchange="toggleTransportFields()">
+                                <option value="stdio">stdio (命令行)</option>
+                                <option value="sse">sse (HTTP)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>超时时间 (秒)</label>
+                            <input type="number" id="timeout" value="60" min="10" max="300">
+                        </div>
+                    </div>
+                    
+                    <div id="stdioFields">
+                        <div class="form-group">
+                            <label>命令 *</label>
+                            <input type="text" id="command" placeholder="例如: npx, uvx, node">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>参数 (每行一个)</label>
+                            <textarea id="args" rows="3" placeholder="-y&#10;@modelcontextprotocol/server-xxx"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div id="sseFields" style="display: none;">
+                        <div class="form-group">
+                            <label>URL *</label>
+                            <input type="url" id="url" placeholder="https://example.com/sse">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>环境变量 (JSON格式)</label>
+                        <textarea id="env" rows="3" placeholder='{"API_KEY": "your-key"}'></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>自动批准的工具 (每行一个)</label>
+                        <textarea id="autoApprove" rows="3" placeholder="tool_name_1&#10;tool_name_2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>描述 (可选)</label>
+                        <input type="text" id="description" placeholder="服务器描述">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label checkbox-warning">
+                            <input type="checkbox" id="disabled">
+                            <span>禁用此服务器</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveServer()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>导入配置</h2>
+                <button class="modal-close" onclick="closeImportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>粘贴你的 mcp.json 配置</label>
+                    <textarea id="importJson" rows="15" placeholder='{"mcpServers": {...}}'></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="mergeConfig" checked>
+                        <span>与现有配置合并 (相同名称的服务器将被覆盖)</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeImportModal()">取消</button>
+                <button class="btn btn-primary" onclick="doImport()">导入</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 560px;
+            max-height: 90vh;
+            overflow: hidden;
+            animation: modalIn 0.2s ease;
+        }
+        
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="url"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 12px 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        
+        .checkbox-label:hover {
+            border-color: var(--text-secondary);
+            background: rgba(26, 32, 40, 0.5);
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            min-height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-primary);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            margin: 0;
+            vertical-align: middle;
+        }
+        
+        .checkbox-label input[type="checkbox"]:hover {
+            border-color: var(--accent);
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            width: 4px;
+            height: 9px;
+            border: solid #0a0e14;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .checkbox-label input[type="checkbox"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        
+        .checkbox-label span {
+            font-size: 12px;
+            color: var(--text-primary);
+            line-height: 18px;
+        }
+        
+        .checkbox-label.checkbox-warning input[type="checkbox"]:checked {
+            background: var(--warning);
+            border-color: var(--warning);
+        }
+        
+        .checkbox-label.checkbox-warning input[type="checkbox"]:checked::after {
+            border-color: #0a0e14;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 24px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success {
+            border-color: var(--success);
+            background: rgba(63, 185, 80, 0.1);
+        }
+        
+        .toast.error {
+            border-color: var(--danger);
+            background: rgba(248, 81, 73, 0.1);
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+
+    <script>
+        // 配置数据
+        let config = { mcpServers: {} };
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+        });
+        
+        // 更新UI
+        function updateUI() {
+            renderServerList();
+            updateJsonPreview();
+            updateServerCount();
+        }
+        
+        // 渲染服务器列表
+        function renderServerList() {
+            const container = document.getElementById('serverList');
+            const servers = Object.entries(config.mcpServers);
+            
+            if (servers.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="opacity: 0.4; margin-bottom: 16px;">
+                            <rect x="6" y="8" width="36" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="6" y="20" width="36" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="6" y="32" width="36" height="10" rx="2" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2"/>
+                            <circle cx="12" cy="13" r="2" fill="currentColor" opacity="0.5"/>
+                            <circle cx="12" cy="25" r="2" fill="currentColor" opacity="0.5"/>
+                        </svg>
+                        <p>暂无服务器配置</p>
+                        <p style="font-size: 13px; margin-top: 8px;">点击"导入配置"或"添加服务器"开始</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = servers.map(([name, server]) => {
+                const isDisabled = server.disabled === true;
+                const transportType = server.transportType || (server.url ? 'sse' : 'stdio');
+                const command = server.command || '';
+                const url = server.url || '';
+                
+                return `
+                    <div class="server-card ${isDisabled ? 'disabled' : ''}">
+                        <div class="server-card-header">
+                            <span class="server-name">${escapeHtml(name)}</span>
+                            <div class="server-status">
+                                <span class="status-badge ${isDisabled ? 'status-disabled' : 'status-enabled'}">
+                                    ${isDisabled ? '已禁用' : '已启用'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="server-info">
+                            <div>类型: <code>${transportType}</code></div>
+                            ${command ? `<div>命令: <code>${escapeHtml(command)}</code></div>` : ''}
+                            ${url ? `<div>URL: <code>${escapeHtml(url)}</code></div>` : ''}
+                            ${server.timeout ? `<div>超时: <code>${server.timeout}s</code></div>` : ''}
+                        </div>
+                        <div class="server-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="editServer('${escapeHtml(name)}')">编辑</button>
+                            <button class="btn btn-sm btn-secondary" onclick="toggleServer('${escapeHtml(name)}')">${isDisabled ? '启用' : '禁用'}</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteServer('${escapeHtml(name)}')">删除</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 更新JSON预览
+        function updateJsonPreview() {
+            const textarea = document.getElementById('jsonPreview');
+            textarea.value = JSON.stringify(config, null, 2);
+        }
+        
+        // 更新服务器计数
+        function updateServerCount() {
+            const count = Object.keys(config.mcpServers).length;
+            document.getElementById('serverCount').textContent = `${count} 个服务器`;
+        }
+        
+        // 打开添加模态框
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = '添加服务器';
+            document.getElementById('editingServer').value = '';
+            document.getElementById('serverForm').reset();
+            document.getElementById('timeout').value = '60';
+            toggleTransportFields();
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        // 编辑服务器
+        function editServer(name) {
+            const server = config.mcpServers[name];
+            if (!server) return;
+            
+            document.getElementById('modalTitle').textContent = '编辑服务器';
+            document.getElementById('editingServer').value = name;
+            document.getElementById('serverName').value = name;
+            document.getElementById('transportType').value = server.transportType || (server.url ? 'sse' : 'stdio');
+            document.getElementById('timeout').value = server.timeout || 60;
+            document.getElementById('command').value = server.command || '';
+            document.getElementById('args').value = (server.args || []).join('\n');
+            document.getElementById('url').value = server.url || '';
+            document.getElementById('env').value = server.env ? JSON.stringify(server.env, null, 2) : '';
+            document.getElementById('autoApprove').value = (server.autoApprove || []).join('\n');
+            document.getElementById('description').value = server.description || '';
+            document.getElementById('disabled').checked = server.disabled === true;
+            
+            toggleTransportFields();
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        // 切换传输类型字段
+        function toggleTransportFields() {
+            const type = document.getElementById('transportType').value;
+            document.getElementById('stdioFields').style.display = type === 'stdio' ? 'block' : 'none';
+            document.getElementById('sseFields').style.display = type === 'sse' ? 'block' : 'none';
+        }
+        
+        // 保存服务器
+        function saveServer() {
+            const editingName = document.getElementById('editingServer').value;
+            const name = document.getElementById('serverName').value.trim();
+            const transportType = document.getElementById('transportType').value;
+            const timeout = parseInt(document.getElementById('timeout').value) || 60;
+            const command = document.getElementById('command').value.trim();
+            const argsText = document.getElementById('args').value.trim();
+            const url = document.getElementById('url').value.trim();
+            const envText = document.getElementById('env').value.trim();
+            const autoApproveText = document.getElementById('autoApprove').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const disabled = document.getElementById('disabled').checked;
+            
+            // 验证
+            if (!name) {
+                showToast('请输入服务器名称', 'error');
+                return;
+            }
+            
+            if (transportType === 'stdio' && !command) {
+                showToast('stdio 类型需要指定命令', 'error');
+                return;
+            }
+            
+            if (transportType === 'sse' && !url) {
+                showToast('sse 类型需要指定 URL', 'error');
+                return;
+            }
+            
+            // 解析环境变量
+            let env = null;
+            if (envText) {
+                try {
+                    env = JSON.parse(envText);
+                } catch (e) {
+                    showToast('环境变量 JSON 格式错误', 'error');
+                    return;
+                }
+            }
+            
+            // 构建服务器配置
+            const server = {};
+            
+            if (description) server.description = description;
+            if (timeout !== 60) server.timeout = timeout;
+            
+            if (transportType === 'stdio') {
+                server.command = command;
+                if (argsText) {
+                    server.args = argsText.split('\n').map(s => s.trim()).filter(s => s);
+                }
+            } else {
+                server.url = url;
+            }
+            
+            if (env) server.env = env;
+            server.transportType = transportType;
+            
+            if (autoApproveText) {
+                server.autoApprove = autoApproveText.split('\n').map(s => s.trim()).filter(s => s);
+            }
+            
+            if (disabled) server.disabled = true;
+            
+            // 如果是编辑且名称改变，删除旧的
+            if (editingName && editingName !== name) {
+                delete config.mcpServers[editingName];
+            }
+            
+            config.mcpServers[name] = server;
+            
+            closeModal();
+            updateUI();
+            showToast(editingName ? '服务器已更新' : '服务器已添加', 'success');
+        }
+        
+        // 切换服务器状态
+        function toggleServer(name) {
+            const server = config.mcpServers[name];
+            if (server) {
+                if (server.disabled) {
+                    delete server.disabled;
+                } else {
+                    server.disabled = true;
+                }
+                updateUI();
+                showToast(`${name} 已${server.disabled ? '禁用' : '启用'}`, 'success');
+            }
+        }
+        
+        // 删除服务器
+        function deleteServer(name) {
+            if (confirm(`确定要删除服务器 "${name}" 吗？`)) {
+                delete config.mcpServers[name];
+                updateUI();
+                showToast('服务器已删除', 'success');
+            }
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        // 导入配置
+        function importConfig() {
+            document.getElementById('importJson').value = '';
+            document.getElementById('importModal').classList.add('active');
+        }
+        
+        // 关闭导入模态框
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('active');
+        }
+        
+        // 执行导入
+        function doImport() {
+            const jsonText = document.getElementById('importJson').value.trim();
+            const merge = document.getElementById('mergeConfig').checked;
+            
+            if (!jsonText) {
+                showToast('请粘贴配置内容', 'error');
+                return;
+            }
+            
+            try {
+                const imported = JSON.parse(jsonText);
+                
+                if (!imported.mcpServers) {
+                    showToast('无效的配置格式，缺少 mcpServers', 'error');
+                    return;
+                }
+                
+                if (merge) {
+                    // 合并配置
+                    config.mcpServers = { ...config.mcpServers, ...imported.mcpServers };
+                } else {
+                    // 替换配置
+                    config = imported;
+                }
+                
+                closeImportModal();
+                updateUI();
+                showToast('配置导入成功', 'success');
+            } catch (e) {
+                showToast('JSON 解析错误: ' + e.message, 'error');
+            }
+        }
+        
+        // 格式化JSON
+        function formatJson() {
+            try {
+                const textarea = document.getElementById('jsonPreview');
+                const parsed = JSON.parse(textarea.value);
+                config = parsed;
+                updateUI();
+                showToast('格式化成功', 'success');
+            } catch (e) {
+                showToast('JSON 格式错误: ' + e.message, 'error');
+            }
+        }
+        
+        // 复制JSON
+        function copyJson() {
+            const textarea = document.getElementById('jsonPreview');
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                showToast('已复制到剪贴板', 'success');
+            }).catch(() => {
+                textarea.select();
+                document.execCommand('copy');
+                showToast('已复制到剪贴板', 'success');
+            });
+        }
+        
+        // 显示提示
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 监听JSON预览区域的变化
+        document.getElementById('jsonPreview').addEventListener('blur', function() {
+            try {
+                const parsed = JSON.parse(this.value);
+                if (parsed.mcpServers) {
+                    config = parsed;
+                    renderServerList();
+                    updateServerCount();
+                }
+            } catch (e) {
+                // 忽略解析错误
+            }
+        });
+    </script>
+</body>
+</html>
