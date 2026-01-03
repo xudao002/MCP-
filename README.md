@@ -470,7 +470,7 @@ A:
       <sub>🎯 总策划 & 产品设计</sub>
       <br /><br />
       <a href="https://www.xudaozai.cn/" title="Blog">🌐</a>
-      <a href="https://github.com/xudao" title="GitHub">💻</a>
+      <a href="https://github.com/xudao002" title="GitHub">💻</a>
     </td>
     <td align="center" width="200">
       <a href="https://kiro.dev/">
